@@ -1,0 +1,109 @@
+import PropTypes from 'prop-types';
+import { PureComponent } from 'react';
+
+import { FormattedMessage } from 'react-intl';
+
+import { withRouter } from 'react-router-dom';
+
+import ImmutablePropTypes from 'react-immutable-proptypes';
+import { connect } from 'react-redux';
+
+import { debounce } from 'lodash';
+
+
+import { fetchTrendingStatuses, expandTrendingStatuses } from 'mastodon/actions/trends';
+import { DismissableBanner } from 'mastodon/components/dismissable_banner';
+import StatusList from 'mastodon/components/status_list';
+import { identityContextPropShape, withIdentity } from 'mastodon/identity_context';
+import { getStatusList } from 'mastodon/selectors';
+import { WithRouterPropTypes } from 'mastodon/utils/react_router';
+
+import SignInBanner from '../ui/components/sign_in_banner';
+
+const mapStateToProps = state => ({
+  statusIds: getStatusList(state, 'trending'),
+  isLoading: state.getIn(['status_lists', 'trending', 'isLoading'], true),
+  hasMore: !!state.getIn(['status_lists', 'trending', 'next']),
+});
+
+class Statuses extends PureComponent {
+
+  static propTypes = {
+    statusIds: ImmutablePropTypes.list,
+    isLoading: PropTypes.bool,
+    hasMore: PropTypes.bool,
+    multiColumn: PropTypes.bool,
+    dispatch: PropTypes.func.isRequired,
+    identity: identityContextPropShape,
+    ...WithRouterPropTypes,
+  };
+
+  componentDidMount () {
+    const { dispatch, statusIds, history } = this.props;
+
+    // If we're navigating back to the screen, do not trigger a reload
+    if (history.action === 'POP' && statusIds.size > 0) {
+      return;
+    }
+
+    dispatch(fetchTrendingStatuses());
+  }
+
+  handleLoadMore = debounce(() => {
+    const { dispatch } = this.props;
+    dispatch(expandTrendingStatuses());
+  }, 300, { leading: true });
+
+  render () {
+    const { isLoading, hasMore, statusIds, multiColumn, identity } = this.props;
+    const { signedIn } = identity;
+
+    const banner = signedIn ? (
+      <DismissableBanner id='explore/statuses'>
+        <FormattedMessage id='dismissable_banner.explore_statuses' defaultMessage='These posts from across the fediverse are gaining traction today. Newer posts with more boosts and favorites are ranked higher.' />
+      </DismissableBanner>
+    ) : null;
+
+    if (!isLoading && statusIds.isEmpty()) {
+      return (
+        <div className='explore__links scrollable scrollable--flex'>
+          {banner}
+
+          {!signedIn && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+              <SignInBanner />
+            </div>
+          )}
+
+          {signedIn && (
+            <div className='empty-column-indicator'>
+              <FormattedMessage id='empty_column.explore_statuses' defaultMessage='Nothing is trending right now. Check back later!' />
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const emptyMessage = <FormattedMessage id='empty_column.explore_statuses' defaultMessage='Nothing is trending right now. Check back later!' />;
+
+    return (
+      <StatusList
+        trackScroll
+        prepend={banner}
+        alwaysPrepend
+        timelineId='explore'
+        statusIds={statusIds}
+        scrollKey='explore-statuses'
+        hasMore={hasMore}
+        isLoading={isLoading}
+        onLoadMore={this.handleLoadMore}
+        emptyMessage={emptyMessage}
+        bindToDocument={!multiColumn}
+        withCounters
+      />
+    );
+  }
+
+}
+
+export default connect(mapStateToProps)(withIdentity(withRouter(Statuses)));
