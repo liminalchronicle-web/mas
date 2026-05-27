@@ -9,9 +9,9 @@ export const LinkFooter: React.FC<{
     <p>
       본 서버는{' '}
       <a href='https://crepe.cm/@longwhile/lw5w0ofg' target='_blank' rel='noopener'>
-        크레페 한참 커미션
+        한참 인스턴스
       </a>
-      으로 설치되었습니다.
+      가 설치되었습니다.
     </p>
 
     <p>

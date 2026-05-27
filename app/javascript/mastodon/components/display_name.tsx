@@ -48,7 +48,7 @@ export class DisplayName extends React.PureComponent<Props> {
   };
 
   render() {
-    const { others, localDomain } = this.props;
+    const { others } = this.props;
 
     let displayName: React.ReactNode,
       suffix: React.ReactNode,
@@ -77,11 +77,7 @@ export class DisplayName extends React.PureComponent<Props> {
         suffix = `+${others.size - 2}`;
       }
     } else if (account) {
-      let acct = account.get('acct');
-
-      if (!acct.includes('@') && localDomain) {
-        acct = `${acct}@${localDomain}`;
-      }
+      const username = account.get('username');
 
       displayName = (
         <bdi>
@@ -93,7 +89,7 @@ export class DisplayName extends React.PureComponent<Props> {
           />
         </bdi>
       );
-      suffix = <span className='display-name__account'>@{acct}</span>;
+      suffix = <span className='display-name__account'>@{username}</span>;
     } else {
       displayName = (
         <bdi>

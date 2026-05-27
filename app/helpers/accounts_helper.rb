@@ -12,11 +12,7 @@ module AccountsHelper
   end
 
   def acct(account)
-    if account.local?
-      "@#{account.acct}@#{site_hostname}"
-    else
-      "@#{account.pretty_acct}"
-    end
+    "@#{account.username}"
   end
 
   def account_formatted_stat(value)

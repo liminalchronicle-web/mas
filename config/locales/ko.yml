@@ -1892,8 +1892,6 @@ ko:
     mastodon-light: 마스토돈 (밝음)
     mastodon-bird-ui-light: 유사 트위터 (밝음)
     mastodon-bird-ui-dark: 유사 트위터 (어두움)
-    theme-ui-light: Liminal Chronicle (밝음)
-    theme-ui-dark: Liminal Chronicle (어두움)
   time:
     formats:
       default: "%Y-%m-%d %H:%M"

@@ -81,10 +81,11 @@ const ProfileSummary = connect((state) => {
   const getValue = (key) => (typeof account.get === 'function' ? account.get(key) : account[key]);
 
   const acct = getValue('acct');
-  const displayName = getValue('display_name_html') || getValue('display_name') || getValue('username');
+  const username = getValue('username');
+  const displayName = getValue('display_name_html') || getValue('display_name') || username;
 
   return (
-    <Link to={`/@${acct}`} className='navigation-panel__profile-card' title={acct}>
+    <Link to={`/@${acct}`} className='navigation-panel__profile-card' title={username}>
       <div className='navigation-panel__profile-avatar'>
         <Avatar account={account} size={avatarSize} />
       </div>
@@ -93,7 +94,7 @@ const ProfileSummary = connect((state) => {
           className='navigation-panel__profile-name'
           dangerouslySetInnerHTML={{ __html: displayName }}
         />
-        <span className='navigation-panel__profile-handle'>@{acct}</span>
+        <span className='navigation-panel__profile-handle'>@{username}</span>
       </div>
     </Link>
   );

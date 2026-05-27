@@ -174,14 +174,10 @@ const messages = defineMessages({
 
 const titleFromAccount = (account: Account) => {
   const displayName = account.display_name;
-  const acct =
-    account.acct === account.username
-      ? `${account.username}@${localDomain}`
-      : account.acct;
   const prefix =
     displayName.trim().length === 0 ? account.username : displayName;
 
-  return `${prefix} (@${acct})`;
+  return `${prefix} (@${account.username})`;
 };
 
 const dateFormatOptions: Intl.DateTimeFormatOptions = {
